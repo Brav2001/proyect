@@ -19,14 +19,12 @@ const toggleLogged = () => {
 </script>
 
 <template>
-  <div>
-    <template v-if="isLoggedIn">
-      <Dashboard />
-    </template>
-    <template v-else>
-      <Login />
-    </template>
-  </div>
+  <template v-if="isLoggedIn">
+    <Dashboard />
+  </template>
+  <template v-else>
+    <Login />
+  </template>
 </template>
 
 <!-- <template>

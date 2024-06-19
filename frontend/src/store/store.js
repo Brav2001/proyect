@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 
 const state = {
-  logged: false,
+  logged: true,
   token: null
 }
 

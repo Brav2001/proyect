@@ -7,9 +7,9 @@
       <el-input v-model="form.password" type="password" />
     </el-form-item>
 
-    <el-form-item>
-      <el-button type="primary" @click="onSubmit">Log In</el-button>
-    </el-form-item>
+    <div class="submit">
+      <el-button type="primary" @click="onSubmit" style="width: 70%">Log In</el-button>
+    </div>
   </el-form>
 </template>
 
@@ -28,11 +28,15 @@ const onSubmit = () => {
 </script>
 
 <style>
-container {
+.container {
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.submit {
+  display: flex;
+  justify-content: center;
 }
 </style>
