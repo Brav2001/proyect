@@ -30,6 +30,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
+
+
 @authRoute.post("/login", response_model=dict, status_code=200)
 def create_user(user: Auth):
     try:

@@ -1,7 +1,7 @@
 import { createStore } from 'vuex'
 
 const state = {
-  logged: true,
+  logged: false,
   token: null
 }
 
@@ -17,7 +17,7 @@ const mutations = {
 
 const actions = {
   logged: ({ commit }) => commit('changeLogged'),
-  token: ({ commit, token }) => commit('changeLogged', token)
+  token: ({ commit, token }) => commit('changeToken', token)
 }
 const getters = {
   isLoggedIn: (state) => state.logged,

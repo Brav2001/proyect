@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Depends, APIRouter
+import jwt
+from jwt import PyJWTError
+from typing import Optional
 from config.db import conn
 from models.user import users
 from schemas.user import User
@@ -8,9 +11,31 @@ import bcrypt
 
 userRoute = APIRouter()
 
+SECRET_KEY = "SECRET"  
+ALGORITHM = "HS256"  
+ACCESS_TOKEN_EXPIRE_MINUTES = 1600
+
+
+def verify_token(authorization: Optional[str] = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Token missing")
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid token format")
+
+    token = authorization.split("Bearer ")[1]
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return payload.get("sub")
+    except PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+
 
 @userRoute.get("/users", response_model=list[dict], status_code=200)
-def get_users():
+def get_users(current_user: str = Depends(verify_token)):
     try:
         user_records = conn.execute(users.select()).fetchall()
         users_list = []
@@ -32,7 +57,7 @@ def get_users():
 
 
 @userRoute.get("/users/{id}", response_model=dict, status_code=200)
-def get_user(id: str):
+def get_user(id: str, current_user: str = Depends(verify_token)):
     try:
         result = conn.execute(users.select().where(users.c.id == id)).first()
         if result:
@@ -55,7 +80,7 @@ def get_user(id: str):
 
 
 @userRoute.post("/users", response_model=User, status_code=201)
-def create_user(user: User):
+def create_user(user: User, current_user: str = Depends(verify_token)):
     try:
         new_user = {
             "nombre": user.nombre,
@@ -84,7 +109,7 @@ def create_user(user: User):
 
 
 @userRoute.put("/users/{id}",  response_model=User, status_code=200)
-def get_user(id: str, user: User):
+def get_user(id: str, user: User, current_user: str = Depends(verify_token)):
     try:
         find = conn.execute(users.select().where(users.c.id == id)).first()
 
@@ -116,7 +141,7 @@ def get_user(id: str, user: User):
 
 
 @userRoute.delete("/users/{id}",  status_code=204)
-def get_user(id: str):
+def get_user(id: str, current_user: str = Depends(verify_token)):
     try:
         conn.execute(users.delete().where(users.c.id == id))
         conn.commit

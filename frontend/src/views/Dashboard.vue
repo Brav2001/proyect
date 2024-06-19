@@ -1,60 +1,71 @@
 <template>
-  <el-page-header :icon="null" class="header">
-    <template #content>
-      <span class="text-large font-600 mr-3"> Title </span>
-    </template>
-  </el-page-header>
-  <el-col :span="12">
-    <h5 class="mb-2">Default colors</h5>
-    <el-menu
-      default-active="2"
-      class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
-    >
-      <el-sub-menu index="1">
-        <template #title>
-          <el-icon><location /></el-icon>
-          <span>Navigator One</span>
-        </template>
-        <el-menu-item-group title="Group One">
-          <el-menu-item index="1-1">item one</el-menu-item>
-          <el-menu-item index="1-2">item two</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="Group Two">
-          <el-menu-item index="1-3">item three</el-menu-item>
-        </el-menu-item-group>
-        <el-sub-menu index="1-4">
-          <template #title>item four</template>
-          <el-menu-item index="1-4-1">item one</el-menu-item>
-        </el-sub-menu>
-      </el-sub-menu>
-      <el-menu-item index="2">
-        <el-icon><icon-menu /></el-icon>
-        <span>Navigator Two</span>
-      </el-menu-item>
-    </el-menu>
-  </el-col>
+  <div class="common-layout">
+    <el-container>
+      <el-aside width="200px">
+        <el-menu
+          active-text-color="#fff"
+          background-color="#002130"
+          class="el-menu-vertical-demo"
+          text-color="#d7d7d7"
+          style="min-height: 100vh; border: none"
+        >
+          <nav>
+            <RouterLink to="/">
+              <el-menu-item index="1">
+                <span>Agregar Usario</span>
+              </el-menu-item>
+            </RouterLink>
+            <RouterLink to="/list">
+              <el-menu-item index="2">
+                <span>Lista de Usuarios</span>
+              </el-menu-item>
+            </RouterLink>
+          </nav>
+          <el-button type="plain" size="small" @click="LogOut">Cerrar Sesión</el-button>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-header class="header">
+          <span style="font-size: 20px; font-weight: bold"> TMsoft Usuario </span>
+        </el-header>
+        <el-main class="main">
+          <RouterView />
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
-
-<script lang="ts" setup>
-import { Document, Menu as IconMenu, Location, Setting } from '@element-plus/icons-vue'
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-</script>
 
 <style scoped>
 .header {
-  position: fixed;
-  top: 0;
-  text-align: left;
   width: 100%;
-  background-color: aqua;
-  color: black;
-  padding: 10px 30px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  background-color: #395e6f;
+}
+.main {
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: #ffffff;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
+
+<script lang="ts" setup>
+import { useStore } from 'vuex'
+const store = useStore()
+
+const toggleLogged = (token) => {
+  store.dispatch('logged')
+  store.dispatch('token', token)
+}
+
+const LogOut = () => {
+  toggleLogged(null)
+  window.localStorage.removeItem('token')
+}
+</script>
