@@ -2,12 +2,8 @@ from fastapi import APIRouter, HTTPException
 from config.db import conn
 from models.user import users
 from schemas.user import User
-from cryptography.fernet import Fernet
 from datetime import datetime
 import bcrypt
-
-key = Fernet.generate_key()
-f = Fernet(key)
 
 
 userRoute = APIRouter()
