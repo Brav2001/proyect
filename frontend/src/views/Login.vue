@@ -5,10 +5,10 @@
       label-width="auto"
       style="max-width: 600px; border: 1px black solid; border-radius: 10px; padding: 20px"
     >
-      <el-form-item label="document">
+      <el-form-item label="Documento">
         <el-input v-model="form.documento" />
       </el-form-item>
-      <el-form-item label="password">
+      <el-form-item label="Contraseña">
         <el-input v-model="form.password" type="password" />
       </el-form-item>
 
@@ -23,6 +23,7 @@
 import { reactive } from 'vue'
 import axios from 'axios'
 import { useStore } from 'vuex'
+import { ElMessage } from 'element-plus'
 
 const store = useStore()
 
@@ -40,10 +41,18 @@ const onSubmit = async () => {
   try {
     const response = await axios.post('http://127.0.0.1:8000/login', form)
     const token = response.data.token
+    ElMessage({
+      message: 'Login Exitoso',
+      type: 'success'
+    })
     window.localStorage.setItem('token', token)
     toggleLogged(token)
   } catch (error) {
     console.error('Error durante el inicio de sesión:', error)
+    ElMessage({
+      message: 'Usuario o contraseña incorrecto',
+      type: 'error'
+    })
   }
 }
 </script>

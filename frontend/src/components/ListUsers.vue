@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" style="width: 80%">
+  <el-table :data="tableData" style="width: 80%; border: 1px black solid; border-radius: 10px">
     <el-table-column fixed prop="id" label="Id" width="60px" />
     <el-table-column prop="nombre" label="Nombre" />
     <el-table-column prop="apellido" label="Apellido" />
@@ -28,9 +28,6 @@
       </el-form-item>
       <el-form-item label="Apellido">
         <el-input v-model="form.apellido" required />
-      </el-form-item>
-      <el-form-item label="Documento">
-        <el-input v-model="form.documento" type="numeric" min="10" max="10" />
       </el-form-item>
       <el-form-item label="Edad">
         <el-input v-model="form.edad" type="numeric" required />
@@ -65,6 +62,7 @@ import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
 import { ElMessageBox } from 'element-plus'
 import { reactive } from 'vue'
+import { URL } from '../api.js'
 
 const dialogVisible = ref(false)
 
@@ -99,7 +97,7 @@ const tableData = ref([])
 
 const getData = async () => {
   try {
-    const res = await axios.get('http://127.0.0.1:8000/users', {
+    const res = await axios.get(`${URL}/users`, {
       headers: { Authorization: `Bearer ${getToken}` }
     })
     tableData.value = res.data
@@ -107,6 +105,7 @@ const getData = async () => {
     console.log(error)
     if (error.response.status === 401) {
       toggleLogged(null)
+      window.localStorage.removeItem('token')
     }
   }
 }
@@ -114,10 +113,7 @@ const getData = async () => {
 getData()
 
 const editUser = (user: any) => {
-  // Abrir el diálogo de edición
   dialogVisible.value = true
-
-  // Cargar los datos del usuario en el formulario
   form.id = user.id
   form.nombre = user.nombre
   form.apellido = user.apellido
@@ -127,7 +123,7 @@ const editUser = (user: any) => {
 
 const handleDelete = async (id: string) => {
   try {
-    await axios.delete(`http://127.0.0.1:8000/users/${id}`, {
+    await axios.delete(`${URL}/users/${id}`, {
       headers: { Authorization: `Bearer ${getToken}` }
     })
 
@@ -145,6 +141,7 @@ const handleDelete = async (id: string) => {
     console.error('Error al eliminar el registro:', error)
     if (error.response.status === 401) {
       toggleLogged(null)
+      window.localStorage.removeItem('token')
     }
   }
 }
@@ -178,7 +175,7 @@ const validarDocumento = () => {
 const validateData = () => {
   validarEdad()
   validarDocumento()
-  if (form.documento && form.nombre && form.apellido && form.edad && form.password) {
+  if (form.documento && form.nombre && form.apellido && form.edad) {
     return true
   }
   return false
@@ -196,7 +193,7 @@ const clearForm = () => {
 const onUpdate = async () => {
   if (validateData()) {
     try {
-      await axios.put(`http://127.0.0.1:8000/users/${form.id}`, form, {
+      await axios.put(`${URL}/users/${form.id}`, form, {
         headers: { Authorization: `Bearer ${getToken}` }
       })
       clearForm()
@@ -213,6 +210,7 @@ const onUpdate = async () => {
       })
       if (error.response.status === 401) {
         toggleLogged(null)
+        window.localStorage.removeItem('token')
       }
     }
   } else {

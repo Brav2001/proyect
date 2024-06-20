@@ -5,14 +5,13 @@
         <el-menu
           active-text-color="#fff"
           background-color="#002130"
-          class="el-menu-vertical-demo"
+          class="el-menu-vertical-demo side"
           text-color="#d7d7d7"
-          style="min-height: 100vh; border: none"
         >
-          <nav>
+          <nav style="margin-top: 70px">
             <RouterLink to="/">
               <el-menu-item index="1">
-                <span>Agregar Usario</span>
+                <span>Agregar Usuario</span>
               </el-menu-item>
             </RouterLink>
             <RouterLink to="/list">
@@ -20,8 +19,10 @@
                 <span>Lista de Usuarios</span>
               </el-menu-item>
             </RouterLink>
+            <el-button type="plain" size="small" style="width: 100%" @click="LogOut"
+              >Cerrar Sesión</el-button
+            >
           </nav>
-          <el-button type="plain" size="small" @click="LogOut">Cerrar Sesión</el-button>
         </el-menu>
       </el-aside>
       <el-container>
@@ -52,6 +53,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.side {
+  min-height: 100vh;
+  border: none;
+  display: flex;
+  justify-content: center;
 }
 </style>
 

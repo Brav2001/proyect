@@ -27,6 +27,7 @@ import axios from 'axios'
 import { reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
+import { URL } from '../api.js'
 
 const store = useStore()
 
@@ -84,7 +85,7 @@ const validateData = () => {
 const onSubmit = async () => {
   if (validateData()) {
     try {
-      await axios.post('http://127.0.0.1:8000/users', form, {
+      await axios.post(`${URL}/users`, form, {
         headers: { Authorization: `Bearer ${getToken}` }
       })
       form.documento = null
@@ -104,6 +105,7 @@ const onSubmit = async () => {
       })
       if (error.response.status === 401) {
         toggleLogged(null)
+        window.localStorage.removeItem('token')
       }
     }
   } else {

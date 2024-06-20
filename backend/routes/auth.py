@@ -8,11 +8,16 @@ from models.user import users
 from schemas.auth import Auth
 import bcrypt
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 authRoute = APIRouter()
 
-SECRET_KEY = "SECRET"  # Clave secreta para firmar el token JWT
-ALGORITHM = "HS256"  # Algoritmo de encriptación para JWT
-ACCESS_TOKEN_EXPIRE_MINUTES = 1600
+secret_key = os.getenv("SECRET_KEY")
+algorithm = os.getenv("ALGORITHM")
+access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 
 def verify_password(plain_password, hashed_password):
@@ -26,10 +31,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
-
-
 
 
 @authRoute.post("/login", response_model=dict, status_code=200)
@@ -43,7 +46,7 @@ def create_user(user: Auth):
             raise
         else:
             access_token_expires = timedelta(
-                minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+                minutes=access_token_expire_minutes)
             access_token = create_access_token(
                 data={"nombre": result.nombre, "documento": result.documento}, expires_delta=access_token_expires
             )

@@ -7,13 +7,15 @@ from models.user import users
 from schemas.user import User
 from datetime import datetime
 import bcrypt
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 userRoute = APIRouter()
 
-SECRET_KEY = "SECRET"  
-ALGORITHM = "HS256"  
-ACCESS_TOKEN_EXPIRE_MINUTES = 1600
+secret_key = os.getenv("SECRET_KEY")
 
 
 def verify_token(authorization: Optional[str] = Header(None)):
@@ -26,12 +28,10 @@ def verify_token(authorization: Optional[str] = Header(None)):
     token = authorization.split("Bearer ")[1]
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, secret_key, algorithms=["HS256"])
         return payload.get("sub")
     except PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-
-
 
 
 @userRoute.get("/users", response_model=list[dict], status_code=200)
@@ -115,12 +115,18 @@ def get_user(id: str, user: User, current_user: str = Depends(verify_token)):
 
         if find:
 
-            conn.execute(users.update().values(
-                nombre=user.nombre,
-                apellido=user.apellido,
-                documento=user.documento,
-                edad=user.edad,
-                password=bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')).where(users.c.id == id))
+            update_values = {
+                "nombre": user.nombre,
+                "apellido": user.apellido,
+                "edad": user.edad,
+            }
+
+            if user.password:
+                hashed_password = bcrypt.hashpw(user.password.encode(
+                    'utf-8'), bcrypt.gensalt()).decode('utf-8')
+                update_values["password"] = hashed_password
+
+            conn.execute(users.update().values(update_values))
             conn.commit()
             result = conn.execute(users.select().where(
                 users.c.id == id)).first()
